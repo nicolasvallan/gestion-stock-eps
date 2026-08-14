@@ -1,16 +1,14 @@
-# Gestion stock EPS — V5.3.3
+# Gestion stock EPS — V5.3.4
 
-Version basée sur la V5.3.2.
+Version basée sur la V5.3.3.
 
-## Correction importante de navigation
-Le filtre d'activité et la recherche ne dépendent plus de la reconstruction de la page lors des synchronisations Supabase.
+## Correction d'affichage horizontal
+- La position horizontale de chaque tableau de matériel est mémorisée.
+- Si l'utilisateur fait glisser le tableau vers la droite pour voir les variantes, le lieu ou les commentaires, la synchronisation automatique ne ramène plus l'affichage à gauche.
+- La position est conservée indépendamment pour chaque matériel affiché.
+- Le filtre d'activité reste actif.
+- La recherche reste active.
+- Les lignes de statuts dépliées restent ouvertes.
+- Le menu déroulant des lieux est conservé.
 
-Concrètement :
-- si « Arts du cirque » est sélectionné, l'application reste sur « Arts du cirque » ;
-- les synchronisations automatiques toutes les quelques secondes ne remettent plus « Toutes les activités » ;
-- après une modification d'un matériel, l'activité sélectionnée reste active ;
-- la recherche saisie reste active ;
-- les lignes de statut dépliées restent ouvertes ;
-- le menu déroulant des lieux est conservé.
-
-La base Supabase et les données ne sont pas modifiées.
+La base Supabase, les données et l'authentification ne sont pas modifiées.

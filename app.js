@@ -18,6 +18,7 @@ let M=[],A=[],B=[],loading=false,lastLoad=0,pollTimer=null;
 const expandedMaterials=new Set();
 let uiActivityFilter='';
 let uiSearch='';
+const horizontalScrollByMaterial=new Map();
 
 function rowmeta(m,s){m.meta??={};m.meta[s]??={id:null,l:'',c:''};return m.meta[s]}
 function total(m){return m.v.reduce((a,v)=>a+m.s.reduce((b,s)=>b+Number(v.x[s]?.q||0),0),0)}
@@ -103,9 +104,23 @@ function fill(){
 }
 function renderLocal(){
   const y=window.scrollY;
+
+  // Sauvegarder la position horizontale de chaque tableau avant que
+  // la synchronisation reconstruise l'affichage.
+  document.querySelectorAll('.wrap[data-scroll-material]').forEach(w=>{
+    horizontalScrollByMaterial.set(w.dataset.scrollMaterial,w.scrollLeft);
+  });
+
   fill();cards();buys();places();
   $('#count').textContent=B.reduce((a,b)=>a+Number(b.q),0);
-  requestAnimationFrame(()=>window.scrollTo(0,y));
+
+  requestAnimationFrame(()=>{
+    window.scrollTo(0,y);
+    document.querySelectorAll('.wrap[data-scroll-material]').forEach(w=>{
+      const x=horizontalScrollByMaterial.get(w.dataset.scrollMaterial);
+      if(typeof x==='number') w.scrollLeft=x;
+    });
+  });
 }
 function cards(){
   let q=uiSearch.toLowerCase(),f=uiActivityFilter,L=M.filter(m=>(!f||m.a===f)&&(!q||`${m.n} ${m.a} ${m.d} ${m.v.map(v=>v.n+' '+v.d)}`.toLowerCase().includes(q)));
@@ -113,7 +128,7 @@ function cards(){
     let simple=m.v.length===1&&!m.v[0].n;
     let heads=m.v.map(v=>`<th><div class="vhead"><span>${simple?'Quantité':esc(v.n)}</span>${simple?'':`<button class="vmenu" data-vmenu="${m.id}|${v.id}" title="Actions de la variante">⋮</button>`}</div>${v.d?`<span class="vnote">${esc(v.d)}</span>`:''}</th>`).join('');
     let row=s=>{let meta=rowmeta(m,s),optional=OPTIONAL.includes(s),open=expandedMaterials.has(m.id);return `<tr class="${s==='En cours'?'':'detail'}" ${s==='En cours'||open?'':'hidden'} data-r="${m.id}"><td class="status">${s==='En cours'?`<button class="toggle" data-toggle="${m.id}">${open?'▼':'▶'}</button>`:''}<span>${s}</span>${optional?`<button class="removeStatus" data-rstatus="${m.id}|${s}" title="Retirer cette ligne">×</button>`:''}</td>${m.v.map(v=>`<td class="qty" data-cell="${m.id}|${v.id}|${s}">${v.x[s]?.q||0}</td>`).join('')}<td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le lieu">${esc(meta.l)}</td><td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le commentaire">${esc(meta.c)}</td></tr>`};
-    return `<div class="material"><div class="mhead"><div><div class="mtitle"><h3>${esc(m.n)}</h3><span class="tag">${esc(m.a)}</span><span class="sub">Total ${total(m)}</span></div></div><div class="mactions"><div class="menuwrap"><button class="dots" data-menu="${m.id}" title="Actions">⋮</button><div class="popmenu" data-pop="${m.id}" hidden><button data-var="${m.id}">+ Ajouter une variante</button><button data-status="${m.id}">+ Ajouter un statut</button><button data-buy="${m.id}">+ Ajouter à acheter</button><button data-edit="${m.id}">Modifier le matériel</button><button class="menudanger" data-del="${m.id}">Supprimer le matériel</button></div></div></div></div><div class="wrap"><table><thead><tr><th class="status">Statuts</th>${heads}<th class="place">Lieu de stockage</th><th class="comment">Commentaires</th></tr></thead><tbody>${m.s.map(row).join('')}</tbody></table></div></div>`;
+    return `<div class="material"><div class="mhead"><div><div class="mtitle"><h3>${esc(m.n)}</h3><span class="tag">${esc(m.a)}</span><span class="sub">Total ${total(m)}</span></div></div><div class="mactions"><div class="menuwrap"><button class="dots" data-menu="${m.id}" title="Actions">⋮</button><div class="popmenu" data-pop="${m.id}" hidden><button data-var="${m.id}">+ Ajouter une variante</button><button data-status="${m.id}">+ Ajouter un statut</button><button data-buy="${m.id}">+ Ajouter à acheter</button><button data-edit="${m.id}">Modifier le matériel</button><button class="menudanger" data-del="${m.id}">Supprimer le matériel</button></div></div></div></div><div class="wrap" data-scroll-material="${m.id}"><table><thead><tr><th class="status">Statuts</th>${heads}<th class="place">Lieu de stockage</th><th class="comment">Commentaires</th></tr></thead><tbody>${m.s.map(row).join('')}</tbody></table></div></div>`;
   }).join('');
 }
 
@@ -223,6 +238,13 @@ document.querySelectorAll('.cancel').forEach(b=>b.onclick=()=>b.closest('dialog'
 
 function view(x){document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==x);document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===x))}
 document.querySelector('nav').onclick=e=>{let t=e.target.closest('.tab');if(t){view(t.dataset.view);if(t.dataset.view==='placeView')places()}};
+document.addEventListener('scroll',e=>{
+  const w=e.target;
+  if(w && w.classList && w.classList.contains('wrap') && w.dataset.scrollMaterial){
+    horizontalScrollByMaterial.set(w.dataset.scrollMaterial,w.scrollLeft);
+  }
+},true);
+
 $('#search').oninput=e=>{uiSearch=e.target.value;cards()};
 $('#filter').onchange=e=>{uiActivityFilter=e.target.value;cards()};
 $('#placeFilter').onchange=places;
