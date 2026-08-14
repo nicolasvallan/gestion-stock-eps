@@ -85,13 +85,23 @@ function hasLocalData(){
 function fill(){
   let o=A.map(a=>`<option>${esc(a)}</option>`).join('');
   $('#mact').innerHTML=o;
-  $('#filter').innerHTML='<option value="">Toutes les activités</option>'+o;
+
+  // Conserver l'activité sélectionnée lors des synchronisations automatiques.
+  let activityFilter=$('#filter'),keepActivity=activityFilter.value;
+  activityFilter.innerHTML='<option value="">Toutes les activités</option>'+o;
+  if(keepActivity && A.includes(keepActivity))activityFilter.value=keepActivity;
+
   let p=[...new Set([...P0,...M.flatMap(m=>m.s.map(s=>rowmeta(m,s).l).filter(Boolean))])].sort((a,b)=>a.localeCompare(b,'fr'));
   $('#places').innerHTML=p.map(x=>`<option value="${esc(x)}">`).join('');
   let pf=$('#placeFilter');
   if(pf){let keep=pf.value;pf.innerHTML='<option value="">Choisir un lieu…</option>'+p.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(p.includes(keep))pf.value=keep}
 }
-function renderLocal(){fill();cards();buys();places();$('#count').textContent=B.reduce((a,b)=>a+Number(b.q),0)}
+function renderLocal(){
+  const y=window.scrollY;
+  fill();cards();buys();places();
+  $('#count').textContent=B.reduce((a,b)=>a+Number(b.q),0);
+  requestAnimationFrame(()=>window.scrollTo(0,y));
+}
 function cards(){
   let q=$('#search').value.toLowerCase(),f=$('#filter').value,L=M.filter(m=>(!f||m.a===f)&&(!q||`${m.n} ${m.a} ${m.d} ${m.v.map(v=>v.n+' '+v.d)}`.toLowerCase().includes(q)));
   $('#cards').innerHTML=L.map(m=>{
