@@ -1,27 +1,18 @@
-# Gestion stock EPS — V5.1 mot de passe commun
+# Gestion stock EPS — V5.2 logo + PWA
 
-Cette version remplace la connexion par compte visible par un accès très simple.
+Cette version conserve le fonctionnement validé de la V5.1 et ajoute la finition d'installation téléphone.
 
-## Connexion
-- L'utilisateur voit uniquement **Mot de passe** puis **Entrer**.
-- L'adresse technique Supabase est utilisée automatiquement en arrière-plan.
-- Le mot de passe commun n'est PAS présent dans les fichiers de l'application.
-- Le mot de passe saisi est envoyé à Supabase Auth pour vérification.
-- Les inscriptions publiques et les connexions anonymes doivent rester désactivées dans Supabase.
+## Nouveautés
+- Logo officiel Gestion stock EPS intégré.
+- Icônes PWA 192 px et 512 px.
+- Variantes maskable pour Android.
+- Favicon navigateur.
+- `manifest.webmanifest` configuré pour installation comme application.
+- `theme_color` et `apple-touch-icon`.
+- Service worker mis à jour pour mettre en cache les fichiers essentiels.
 
-## Synchronisation
-Les données sont enregistrées dans Supabase et l'application actualise régulièrement l'inventaire partagé.
+## Installation sur téléphone
+Après publication sur GitHub Pages, ouvrir l'application dans Chrome puis utiliser **Ajouter à l'écran d'accueil** / **Installer l'application**.
 
-## Changer le mot de passe
-Le mot de passe commun pourra être modifié dans Supabase sur l'unique utilisateur technique.
-Aucune modification du code de l'application ne sera nécessaire.
-
-## Migration V4.7
-Si la base distante est vide et que les données V4.7 sont encore présentes dans le même navigateur, le bouton d'import local reste disponible.
-
-## Premier test
-1. Décompresser ce ZIP dans un nouveau dossier.
-2. Ouvrir `index.html` avec Live Server.
-3. Saisir le mot de passe commun créé dans Supabase.
-4. Vérifier que l'inventaire s'ouvre.
-5. Si proposé, importer les données locales V4.7.
+## Important
+Le fonctionnement Supabase, le mot de passe commun, les données et la synchronisation ne sont pas modifiés par cette version.
