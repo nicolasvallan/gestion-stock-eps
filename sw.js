@@ -1,9 +1,9 @@
-const CACHE='gestion-stock-eps-v5-3-4';
+const CACHE='gestion-stock-eps-v5-4';
 const ASSETS=[
   './',
   './index.html',
   './styles.css',
-  './app.js',
+  './app.js?v=5.4',
   './manifest.webmanifest',
   './favicon.png',
   './icons/icon-192.png',

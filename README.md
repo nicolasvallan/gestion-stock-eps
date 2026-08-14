@@ -1,14 +1,18 @@
-# Gestion stock EPS — V5.3.4
+# Gestion stock EPS — V5.4
 
-Version basée sur la V5.3.3.
+## Correction de fond de la synchronisation
 
-## Correction d'affichage horizontal
-- La position horizontale de chaque tableau de matériel est mémorisée.
-- Si l'utilisateur fait glisser le tableau vers la droite pour voir les variantes, le lieu ou les commentaires, la synchronisation automatique ne ramène plus l'affichage à gauche.
-- La position est conservée indépendamment pour chaque matériel affiché.
-- Le filtre d'activité reste actif.
-- La recherche reste active.
-- Les lignes de statuts dépliées restent ouvertes.
-- Le menu déroulant des lieux est conservé.
+Les versions précédentes essayaient de restaurer l'état de l'écran après chaque synchronisation.
+La V5.4 corrige la cause du problème :
+
+- Supabase est toujours vérifié automatiquement toutes les 4 secondes.
+- Si aucune donnée n'a changé, l'interface n'est plus reconstruite.
+- Le défilement horizontal reste donc exactement où l'utilisateur l'a placé.
+- L'activité sélectionnée reste affichée.
+- Les lignes de statuts restent ouvertes.
+- La recherche et la position dans la page restent stables.
+- Si un autre téléphone modifie réellement les données, l'affichage est alors mis à jour.
+
+Le fichier JavaScript utilise aussi une URL versionnée (`app.js?v=5.4`) afin d'éviter qu'un ancien fichier reste servi par le cache du navigateur ou de la PWA.
 
 La base Supabase, les données et l'authentification ne sont pas modifiées.
