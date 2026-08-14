@@ -1,0 +1,33 @@
+:root{font-family:Arial,system-ui,sans-serif;color:#10223c;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}header{background:#1769c2;color:#fff;padding:20px max(16px,calc((100vw - 1250px)/2))}header h1{margin:0}header p{margin:4px 0 0}main{max-width:1250px;margin:18px auto;padding:0 12px}button{border:0;border-radius:9px;background:#1769c2;color:#fff;font-weight:700;padding:9px 12px;cursor:pointer}.light{background:#edf2f8;color:#122640}.danger{background:#c6281c}nav,.tools,.exports,.buyhead,.box{background:#fff;border:1px solid #d9e3ee;border-radius:13px;padding:10px;margin-bottom:12px}nav,.tools,.exports,.buyhead{display:flex;gap:8px;align-items:center}.tab{background:transparent;color:#52657d}.tab.active{background:#1769c2;color:#fff}.tools input{flex:1}input,select,textarea{border:1px solid #c9d6e6;border-radius:8px;padding:9px 10px;font:inherit}.material{background:#fff;border:1px solid #d7e2ee;border-radius:14px;overflow:hidden;margin:12px 0}.mhead{padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center}.mtitle{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mtitle h3{margin:0}.tag{background:#edf3fa;border-radius:999px;padding:4px 9px}.sub{color:#6a7d94;font-size:.88rem}.mcomment{padding:0 13px 10px;color:#596e88}.mactions{display:flex;gap:6px;flex-wrap:wrap}.wrap{overflow:auto}table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:680px}th,td{border-top:1px solid #dfe7f0;border-right:1px solid #e7edf4;text-align:center;padding:9px 6px}th:last-child,td:last-child{border-right:0}thead th{background:#eef1f5}.status{width:145px;text-align:left;padding-left:12px}.place{width:190px}.comment{width:170px}.qty{font-weight:800;cursor:pointer}.qty:hover{background:#e8f2ff}.toggle{background:transparent;color:#1769c2;padding:2px 6px}.detail[hidden]{display:none}.vnote{display:block;color:#6d7f95;font-size:.7rem;font-weight:400}.buyhead{justify-content:space-between}.buyhead h2{margin:0}.buyhead p{margin:3px 0;color:#667a92}.buyrow{display:flex;justify-content:space-between;gap:10px;padding:11px 3px;border-bottom:1px solid #e1e8f0}.meta{color:#657990;font-size:.88rem}.buygrid{display:grid;grid-template-columns:1fr 100px;gap:7px;align-items:center}dialog{border:0;border-radius:15px;width:min(580px,calc(100vw - 24px));padding:0;box-shadow:0 20px 60px #0005}dialog::backdrop{background:#10223c77}dialog form{padding:20px}dialog h2{margin-top:0}dialog label{display:block;font-weight:700;margin:12px 0}dialog label input,dialog label select,dialog label textarea{display:block;width:100%;margin-top:5px;font-weight:400}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.view[hidden]{display:none}@media(max-width:700px){.tools,.mhead{flex-wrap:wrap}.tools input{flex-basis:100%}.mhead{align-items:flex-start;flex-direction:column}}
+.menuwrap{position:relative}.dots{font-size:1.35rem;line-height:1;background:#edf2f8;color:#122640;min-width:38px;padding:7px 10px}.popmenu{position:absolute;right:0;top:42px;z-index:20;width:220px;background:#fff;border:1px solid #d6e1ed;border-radius:11px;box-shadow:0 12px 32px #10223c2b;padding:6px}.popmenu[hidden]{display:none}.popmenu button{display:block;width:100%;text-align:left;background:transparent;color:#122640;border-radius:7px;padding:9px 10px}.popmenu button:hover{background:#eef4fb}.popmenu .menudanger{color:#b42318}.vhead{display:flex;align-items:center;justify-content:center;gap:4px}.vmenu{background:transparent;color:#61758e;padding:2px 5px;font-size:1rem}
+/* V4.2 - le menu d'actions reste dans le flux de la fiche :
+   l'ensemble du matériel se déroule au lieu de couper le menu. */
+.menuwrap{display:flex;flex-direction:column;align-items:flex-end}
+.popmenu{position:static;margin-top:6px}
+
+/* V4.3 — vue par lieu */
+.placehead{background:#fff;border:1px solid #d9e3ee;border-radius:13px;padding:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.placehead h2{margin:0}.placehead p{margin:4px 0 0;color:#667a92}.placehead select{min-width:220px}
+.placesummary{margin:0 2px 10px;color:#52657d}
+.placelist{overflow:hidden}.placetable{overflow:auto}.placetable table{min-width:760px}.placetable th{text-align:left}.placetable td{text-align:left}
+@media(max-width:700px){.placehead select{width:100%}}
+
+/* V4.4 — statuts optionnels */
+.status{position:relative}
+.removeStatus{float:right;background:transparent;color:#8291a5;padding:0 4px;font-size:1.15rem;line-height:1}
+.removeStatus:hover{color:#b42318;background:#fbeceb}
+
+/* V4.5 — lieu et commentaire modifiables au clic */
+.editableMeta{cursor:pointer}
+.editableMeta:hover{background:#eef4fb}
+
+/* V5 — connexion et synchronisation */
+.authscreen{position:fixed;inset:0;background:#eef4fb;z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
+.authscreen[hidden]{display:none}.authcard{width:min(430px,100%);background:#fff;border:1px solid #d7e2ee;border-radius:18px;padding:24px;box-shadow:0 18px 50px #10223c22}
+.authcard h1{margin:0 0 4px}.authcard>p{color:#60758e}.authcard form{display:grid;gap:12px;margin-top:16px}.authcard button{width:100%}
+.authsep{text-align:center;color:#8494a7;margin:18px 0 4px}.authmsg{min-height:24px;font-weight:600}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.account{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.account span{font-size:.9rem}
+#syncState.ok{color:#16794a}#syncState.busy{color:#946200}#syncState.err{color:#b42318}
+.importbox{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:50;width:min(560px,calc(100% - 28px));background:#fff;border:1px solid #cad8e8;border-radius:14px;padding:14px;box-shadow:0 14px 36px #10223c26}
+.importbox h3{margin:0 0 4px}.importbox p{margin:0 0 10px;color:#60758e}
+@media(max-width:700px){.account{width:100%}.account #userEmail{max-width:180px;overflow:hidden;text-overflow:ellipsis}.account button{padding:7px 9px}}

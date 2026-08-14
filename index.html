@@ -1,0 +1,61 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gestion stock EPS V5.1 — mot de passe commun</title><link rel="stylesheet" href="styles.css"></head><body>
+<div id="authScreen" class="authscreen">
+  <div class="authcard">
+    <h1>Gestion stock EPS</h1>
+    <p>Accès à l’inventaire partagé</p>
+    <form id="loginForm">
+      <label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Entrer</button>
+    </form>
+    <p id="authMsg" class="authmsg"></p>
+  </div>
+</div>
+<header><div><h1>Gestion stock EPS</h1><p>Inventaire EPS — synchronisation Supabase</p></div>
+<div class="account"><span id="syncState">● Hors ligne</span><span id="userEmail"></span><button id="refreshNow" class="light">↻</button><button id="logout" class="light">Déconnexion</button></div></header><main id="appMain" hidden>
+<nav><button class="tab active" data-view="inv">Inventaire</button><button class="tab" data-view="placeView">Par lieu</button><button class="tab" data-view="buy">À acheter <b id="count">0</b></button></nav>
+<section id="inv" class="view"><div class="tools"><input id="search" placeholder="Rechercher un matériel…"><select id="filter"><option value="">Toutes les activités</option></select><button id="addMat">+ Matériel</button><button id="addAct" class="light">+ Activité</button></div>
+<div class="exports"><b>Exporter :</b><button class="light ex" data-s="">Inventaire complet</button><button class="light ex" data-s="En stock">En stock</button><button class="light ex" data-s="En cours">En cours</button></div><div id="cards"></div></section>
+
+<section id="placeView" class="view" hidden>
+  <div class="placehead">
+    <div>
+      <h2>Matériel par lieu</h2>
+      <p>Choisis un lieu pour voir tout le matériel qui y est enregistré.</p>
+    </div>
+    <select id="placeFilter"><option value="">Choisir un lieu…</option></select>
+  </div>
+  <div id="placeSummary" class="placesummary"></div>
+  <div id="placeList" class="box placelist"><p>Choisis un lieu.</p></div>
+</section>
+
+<section id="buy" class="view" hidden><div class="buyhead"><div><h2>Liste d'achat</h2><p>Matériel ajouté avec « + À acheter ».</p></div><button id="exportBuy">Exporter la liste</button></div><div id="buyList" class="box"></div></section>
+<div id="emptyRemote" class="importbox" hidden>
+  <h3>Base Supabase vide</h3>
+  <p>Tu peux importer les données présentes dans ta version locale V4.7 vers la base partagée.</p>
+  <button id="importLocal">Importer mes données locales</button>
+</div>
+</main>
+<dialog id="matDlg"><form id="matForm"><h2>Matériel</h2><input id="mid" type="hidden"><label>Nom<input id="mname" required></label><label>Activité<select id="mact"></select></label><label>Commentaire<textarea id="mdetails" rows="3"></textarea></label><div class="actions"><button type="button" class="light cancel">Annuler</button><button>Enregistrer</button></div></form></dialog>
+<dialog id="varDlg"><form id="varForm"><h2 id="varTitle">Ajouter une variante</h2><input id="vmid" type="hidden"><input id="vid" type="hidden"><label>Variante<input id="vname" required placeholder="T6, Grande, 3 kg, Rouge…"></label><label>Commentaire<textarea id="vdetails" rows="2"></textarea></label><div class="actions"><button type="button" class="light cancel">Annuler</button><button>Ajouter</button></div></form></dialog>
+<dialog id="cellDlg"><form id="cellForm"><h2 id="cellTitle">Modifier</h2><input id="cmid" type="hidden"><input id="cvid" type="hidden"><input id="cstatus" type="hidden"><label>Quantité<input id="cqty" type="number" min="0" required></label><datalist id="places"></datalist><div class="actions"><button type="button" class="light cancel">Annuler</button><button>Enregistrer</button></div></form></dialog>
+<dialog id="buyDlg"><form id="buyForm"><h2>Ajouter à la liste d'achat</h2><input id="bmid" type="hidden"><div id="buyVars"></div><label>Commentaire<input id="bcom" placeholder="Fournisseur, commande…"></label><div class="actions"><button type="button" class="light cancel">Annuler</button><button>Ajouter</button></div></form></dialog>
+<dialog id="actDlg"><form id="actForm"><h2>Nouvelle activité</h2><label>Nom<input id="aname" required></label><div class="actions"><button type="button" class="light cancel">Annuler</button><button>Ajouter</button></div></form></dialog>
+
+<dialog id="statusDlg"><form id="statusForm"><h2>Ajouter un statut</h2>
+<input id="smid" type="hidden">
+<label>Statut<select id="sname"></select></label>
+<div class="actions"><button type="button" class="light cancel">Annuler</button><button>Ajouter</button></div>
+</form></dialog>
+
+
+
+
+<dialog id="rowDlg"><form id="rowForm"><h2 id="rowTitle">Modifier la ligne</h2>
+<input id="rmid" type="hidden"><input id="rstatus" type="hidden">
+<label>Lieu de stockage<input id="rloc" list="places"></label>
+<label>Commentaire<textarea id="rcom" rows="3"></textarea></label>
+<div class="actions"><button type="button" class="light cancel">Annuler</button><button>Enregistrer</button></div>
+</form></dialog>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
