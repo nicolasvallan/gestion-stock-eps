@@ -16,6 +16,8 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 
 let M=[],A=[],B=[],loading=false,lastLoad=0,pollTimer=null;
 const expandedMaterials=new Set();
+let uiActivityFilter='';
+let uiSearch='';
 
 function rowmeta(m,s){m.meta??={};m.meta[s]??={id:null,l:'',c:''};return m.meta[s]}
 function total(m){return m.v.reduce((a,v)=>a+m.s.reduce((b,s)=>b+Number(v.x[s]?.q||0),0),0)}
@@ -83,13 +85,16 @@ function hasLocalData(){
 }
 
 function fill(){
-  let o=A.map(a=>`<option>${esc(a)}</option>`).join('');
+  let o=A.map(a=>`<option value="${esc(a)}">${esc(a)}</option>`).join('');
   $('#mact').innerHTML=o;
 
-  // Conserver l'activité sélectionnée lors des synchronisations automatiques.
-  let activityFilter=$('#filter'),keepActivity=activityFilter.value;
+  // L'état du filtre est conservé indépendamment du DOM.
+  // Ainsi une synchronisation distante ne peut jamais ramener l'utilisateur
+  // sur « Toutes les activités » pendant qu'il travaille sur une activité.
+  let activityFilter=$('#filter');
   activityFilter.innerHTML='<option value="">Toutes les activités</option>'+o;
-  if(keepActivity && A.includes(keepActivity))activityFilter.value=keepActivity;
+  if(uiActivityFilter && A.includes(uiActivityFilter)) activityFilter.value=uiActivityFilter;
+  else if(!uiActivityFilter) activityFilter.value='';
 
   let p=[...new Set([...P0,...M.flatMap(m=>m.s.map(s=>rowmeta(m,s).l).filter(Boolean))])].sort((a,b)=>a.localeCompare(b,'fr'));
   $('#places').innerHTML=p.map(x=>`<option value="${esc(x)}">`).join('');
@@ -103,7 +108,7 @@ function renderLocal(){
   requestAnimationFrame(()=>window.scrollTo(0,y));
 }
 function cards(){
-  let q=$('#search').value.toLowerCase(),f=$('#filter').value,L=M.filter(m=>(!f||m.a===f)&&(!q||`${m.n} ${m.a} ${m.d} ${m.v.map(v=>v.n+' '+v.d)}`.toLowerCase().includes(q)));
+  let q=uiSearch.toLowerCase(),f=uiActivityFilter,L=M.filter(m=>(!f||m.a===f)&&(!q||`${m.n} ${m.a} ${m.d} ${m.v.map(v=>v.n+' '+v.d)}`.toLowerCase().includes(q)));
   $('#cards').innerHTML=L.map(m=>{
     let simple=m.v.length===1&&!m.v[0].n;
     let heads=m.v.map(v=>`<th><div class="vhead"><span>${simple?'Quantité':esc(v.n)}</span>${simple?'':`<button class="vmenu" data-vmenu="${m.id}|${v.id}" title="Actions de la variante">⋮</button>`}</div>${v.d?`<span class="vnote">${esc(v.d)}</span>`:''}</th>`).join('');
@@ -218,7 +223,9 @@ document.querySelectorAll('.cancel').forEach(b=>b.onclick=()=>b.closest('dialog'
 
 function view(x){document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==x);document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===x))}
 document.querySelector('nav').onclick=e=>{let t=e.target.closest('.tab');if(t){view(t.dataset.view);if(t.dataset.view==='placeView')places()}};
-$('#search').oninput=cards;$('#filter').onchange=cards;$('#placeFilter').onchange=places;
+$('#search').oninput=e=>{uiSearch=e.target.value;cards()};
+$('#filter').onchange=e=>{uiActivityFilter=e.target.value;cards()};
+$('#placeFilter').onchange=places;
 
 function cv(x){return `"${String(x??'').replaceAll('"','""')}"`}
 function dl(n,r){let u=URL.createObjectURL(new Blob(['\ufeff'+r.map(x=>x.map(cv).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u)}
