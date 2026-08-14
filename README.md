@@ -1,18 +1,11 @@
-# Gestion stock EPS — V5.2 logo + PWA
+# Gestion stock EPS — V5.3.1
 
-Cette version conserve le fonctionnement validé de la V5.1 et ajoute la finition d'installation téléphone.
+Version basée sur la V5.3.
 
-## Nouveautés
-- Logo officiel Gestion stock EPS intégré.
-- Icônes PWA 192 px et 512 px.
-- Variantes maskable pour Android.
-- Favicon navigateur.
-- `manifest.webmanifest` configuré pour installation comme application.
-- `theme_color` et `apple-touch-icon`.
-- Service worker mis à jour pour mettre en cache les fichiers essentiels.
+## Corrections
+- Le menu déroulant des lieux de stockage reste en place.
+- Les lignes « En stock », « En réparation » et « En prêt » restent désormais ouvertes après les synchronisations automatiques.
+- Cliquer de nouveau sur la flèche referme normalement les lignes.
+- La synchronisation Supabase continue de fonctionner toutes les quelques secondes sans modifier l'état d'affichage.
 
-## Installation sur téléphone
-Après publication sur GitHub Pages, ouvrir l'application dans Chrome puis utiliser **Ajouter à l'écran d'accueil** / **Installer l'application**.
-
-## Important
-Le fonctionnement Supabase, le mot de passe commun, les données et la synchronisation ne sont pas modifiés par cette version.
+La base Supabase, les données et l'authentification ne sont pas modifiées.

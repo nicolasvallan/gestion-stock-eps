@@ -1,4 +1,4 @@
-const CACHE='gestion-stock-eps-v5-2';
+const CACHE='gestion-stock-eps-v5-3-1';
 const ASSETS=[
   './',
   './index.html',

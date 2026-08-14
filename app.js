@@ -15,6 +15,7 @@ const $=s=>document.querySelector(s);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let M=[],A=[],B=[],loading=false,lastLoad=0,pollTimer=null;
+const expandedMaterials=new Set();
 
 function rowmeta(m,s){m.meta??={};m.meta[s]??={id:null,l:'',c:''};return m.meta[s]}
 function total(m){return m.v.reduce((a,v)=>a+m.s.reduce((b,s)=>b+Number(v.x[s]?.q||0),0),0)}
@@ -96,7 +97,7 @@ function cards(){
   $('#cards').innerHTML=L.map(m=>{
     let simple=m.v.length===1&&!m.v[0].n;
     let heads=m.v.map(v=>`<th><div class="vhead"><span>${simple?'Quantité':esc(v.n)}</span>${simple?'':`<button class="vmenu" data-vmenu="${m.id}|${v.id}" title="Actions de la variante">⋮</button>`}</div>${v.d?`<span class="vnote">${esc(v.d)}</span>`:''}</th>`).join('');
-    let row=s=>{let meta=rowmeta(m,s),optional=OPTIONAL.includes(s);return `<tr class="${s==='En cours'?'':'detail'}" ${s==='En cours'?'':'hidden'} data-r="${m.id}"><td class="status">${s==='En cours'?`<button class="toggle" data-toggle="${m.id}">▶</button>`:''}<span>${s}</span>${optional?`<button class="removeStatus" data-rstatus="${m.id}|${s}" title="Retirer cette ligne">×</button>`:''}</td>${m.v.map(v=>`<td class="qty" data-cell="${m.id}|${v.id}|${s}">${v.x[s]?.q||0}</td>`).join('')}<td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le lieu">${esc(meta.l)}</td><td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le commentaire">${esc(meta.c)}</td></tr>`};
+    let row=s=>{let meta=rowmeta(m,s),optional=OPTIONAL.includes(s),open=expandedMaterials.has(m.id);return `<tr class="${s==='En cours'?'':'detail'}" ${s==='En cours'||open?'':'hidden'} data-r="${m.id}"><td class="status">${s==='En cours'?`<button class="toggle" data-toggle="${m.id}">${open?'▼':'▶'}</button>`:''}<span>${s}</span>${optional?`<button class="removeStatus" data-rstatus="${m.id}|${s}" title="Retirer cette ligne">×</button>`:''}</td>${m.v.map(v=>`<td class="qty" data-cell="${m.id}|${v.id}|${s}">${v.x[s]?.q||0}</td>`).join('')}<td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le lieu">${esc(meta.l)}</td><td class="editableMeta" data-rowedit="${m.id}|${s}" title="Modifier le commentaire">${esc(meta.c)}</td></tr>`};
     return `<div class="material"><div class="mhead"><div><div class="mtitle"><h3>${esc(m.n)}</h3><span class="tag">${esc(m.a)}</span><span class="sub">Total ${total(m)}</span></div></div><div class="mactions"><div class="menuwrap"><button class="dots" data-menu="${m.id}" title="Actions">⋮</button><div class="popmenu" data-pop="${m.id}" hidden><button data-var="${m.id}">+ Ajouter une variante</button><button data-status="${m.id}">+ Ajouter un statut</button><button data-buy="${m.id}">+ Ajouter à acheter</button><button data-edit="${m.id}">Modifier le matériel</button><button class="menudanger" data-del="${m.id}">Supprimer le matériel</button></div></div></div></div><div class="wrap"><table><thead><tr><th class="status">Statuts</th>${heads}<th class="place">Lieu de stockage</th><th class="comment">Commentaires</th></tr></thead><tbody>${m.s.map(row).join('')}</tbody></table></div></div>`;
   }).join('');
 }
@@ -149,14 +150,31 @@ $('#cards').onclick=async e=>{
     if(d.status){let m=M.find(x=>x.id===d.status),avail=OPTIONAL.filter(s=>!m.s.includes(s));if(!avail.length){alert('Les statuts optionnels sont déjà ajoutés pour ce matériel.');return}$('#smid').value=m.id;$('#sname').innerHTML=avail.map(s=>`<option>${esc(s)}</option>`).join('');$('#statusDlg').showModal();return}
     if(d.rstatus){let [mi,s]=d.rstatus.split('|'),m=M.find(x=>x.id===mi),meta=rowmeta(m,s),hasData=m.v.some(v=>Number(v.x[s]?.q||0)>0)||meta.l||meta.c;if(confirm(hasData?`Retirer la ligne "${s}" ? Les données de ce statut seront supprimées.`:`Retirer la ligne "${s}" ?`)){await requireOk(sb.from('material_statuses').delete().eq('id',meta.id));await loadRemote()}return}
     if(d.vmenu){let [mi,vi]=d.vmenu.split('|'),m=M.find(x=>x.id===mi),v=m.v.find(x=>x.id===vi);let choice=prompt(`Variante "${v.n}"\n\nTapez M pour modifier ou S pour supprimer :`,'M');if(!choice)return;if(choice.trim().toUpperCase()==='S'){if(confirm(`Supprimer la variante "${v.n}" et toutes ses quantités ?`)){await requireOk(sb.from('variants').delete().eq('id',vi));await loadRemote()}return}if(choice.trim().toUpperCase()==='M'){$('#vmid').value=mi;$('#vid').value=vi;$('#vname').value=v.n;$('#vdetails').value=v.d;$('#varTitle').textContent='Modifier la variante';$('#varDlg').showModal()}return}
-    if(d.toggle){let r=[...document.querySelectorAll(`[data-r="${d.toggle}"]`)].slice(1),open=r.every(x=>x.hidden);r.forEach(x=>x.hidden=!open);e.target.textContent=open?'▼':'▶';return}
+    if(d.toggle){let r=[...document.querySelectorAll(`[data-r="${d.toggle}"]`)].slice(1),open=r.every(x=>x.hidden);r.forEach(x=>x.hidden=!open);if(open)expandedMaterials.add(d.toggle);else expandedMaterials.delete(d.toggle);e.target.textContent=open?'▼':'▶';return}
     if(d.cell){let [mi,vi,s]=d.cell.split('|');return openCell(mi,vi,s)}
-    if(d.rowedit){let [mi,s]=d.rowedit.split('|'),m=M.find(x=>x.id===mi),meta=rowmeta(m,s);$('#rmid').value=mi;$('#rstatus').value=s;$('#rowTitle').textContent=`${m.n} — ${s}`;$('#rloc').value=meta.l;$('#rcom').value=meta.c;return $('#rowDlg').showModal()}
+    if(d.rowedit){let [mi,s]=d.rowedit.split('|'),m=M.find(x=>x.id===mi),meta=rowmeta(m,s);$('#rmid').value=mi;$('#rstatus').value=s;$('#rowTitle').textContent=`${m.n} — ${s}`;fillLocationSelect(meta.l);$('#rcom').value=meta.c;return $('#rowDlg').showModal()}
     if(d.var){$('#vmid').value=d.var;$('#vid').value='';$('#vname').value='';$('#vdetails').value='';$('#varTitle').textContent='Ajouter une variante';return $('#varDlg').showModal()}
     if(d.buy)return openBuy(d.buy);
     if(d.edit)return openMat(M.find(x=>x.id===d.edit));
     if(d.del&&confirm('Supprimer ce matériel ?')){await requireOk(sb.from('materials').delete().eq('id',d.del));await loadRemote()}
   }catch(err){showErr(err)}
+};
+
+function fillLocationSelect(current=''){
+  let locations=[...new Set([...P0,...M.flatMap(m=>m.s.map(s=>rowmeta(m,s).l).filter(Boolean))])].sort((a,b)=>a.localeCompare(b,'fr'));
+  if(current&&!locations.includes(current))locations.unshift(current);
+  $('#rloc').innerHTML='<option value="">— Aucun lieu —</option>'+locations.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')+'<option value="__other__">+ Autre lieu…</option>';
+  $('#rloc').value=current||'';
+}
+$('#rloc').onchange=e=>{
+  if(e.target.value==='__other__'){
+    let n=prompt('Nom du nouveau lieu :','');
+    if(n&&n.trim()){
+      let v=n.trim();
+      let opt=document.createElement('option');opt.value=v;opt.textContent=v;
+      e.target.insertBefore(opt,e.target.lastElementChild);e.target.value=v;
+    }else e.target.value='';
+  }
 };
 
 function openCell(mi,vi,s){let m=M.find(x=>x.id===mi),v=m?.v.find(x=>x.id===vi);if(!m||!v)return;$('#cmid').value=mi;$('#cvid').value=vi;$('#cstatus').value=s;$('#cellTitle').textContent=`${m.n}${v.n?' — '+v.n:''} — ${s}`;$('#cqty').value=v.x[s]?.q||0;$('#cellDlg').showModal()}
