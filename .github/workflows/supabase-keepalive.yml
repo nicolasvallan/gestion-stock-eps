@@ -19,7 +19,8 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           curl --fail --show-error --silent \
+            -X POST \
             --retry 3 \
             --max-time 30 \
             -H "apikey: $SUPABASE_ANON_KEY" \
-            "$SUPABASE_URL/rest/v1/activities?select=id&limit=1"
+            "$SUPABASE_URL/rest/v1/rpc/keepalive"
