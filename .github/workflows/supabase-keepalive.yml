@@ -1,0 +1,25 @@
+
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Interroger Supabase
+        env:
+          SUPABASE_URL: https://pcfhbuzjxjhevcknghmg.supabase.co
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl --fail --show-error --silent \
+            --retry 3 \
+            --max-time 30 \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/activities?select=id&limit=1"
